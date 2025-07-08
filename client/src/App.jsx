@@ -8,7 +8,7 @@ import StudentHomePage from "./pages/student/home"
 import { useContext } from "react"
 import { AuthContext } from "./context/auth-context"
 import StudentViewCommanLayout from "./components/student-view/comman-layout"
-
+import NotFoundPage from "./pages/not-found"
 
 
 
@@ -50,6 +50,8 @@ function App() {
         <Route path="" element={<StudentHomePage />}/>
         <Route path="home" element={<StudentHomePage />}/>
       </Route>
+
+      <Route path="*" element="NotFoundPage"/>
     </Routes>
   )
 }

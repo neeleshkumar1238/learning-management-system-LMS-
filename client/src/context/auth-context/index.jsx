@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { initialSignInFormData,initialSignUpFormData } from "@/config";
 import { registerService ,loginService, checkAuthService} from "@/services";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const AuthContext=createContext(null)
 
@@ -14,6 +15,9 @@ const [auth,setAuth]=useState({
     authenticate:false,
     user:null,
 });
+
+const [loading,setLoading]=useState(true);
+
 
 async function handleRegisterUser(event) {
     event.preventDefault();
@@ -41,20 +45,41 @@ async function handleLoginUser(event) {
 }
 
 async function checkAuthUser() {
-    const data=await checkAuthService();
     
-    if(data.success){
-        setAuth({
-            authenticate:true,
-            user:data.data.user,
-        })
+    
+    try {
+        const data=await checkAuthService();
+        if(data.success){
+            setAuth({
+                authenticate:true,
+                user:data.data.user,
+            })
+            setLoading(false)
+        }
+        else{
+            setAuth({
+                authenticate:false,
+                user:null,
+            })
+            setLoading(false)
+        }
+    } catch (error) {
+        console.log("error from my side: ",error)
+        if(!error?.response?.data?.success){
+            setAuth({
+                authenticate:false,
+                user:null,
+            })
+            setLoading(false)
+        }
     }
-    else{
-        setAuth({
-            authenticate:false,
-            user:null,
-        })
-    }
+}
+
+function resetCredentials(){
+    setAuth({
+        authenticate:false,
+        user:null
+    })
 }
 
 useEffect(()=>{
@@ -62,7 +87,7 @@ useEffect(()=>{
 },[]
 )
 
-console.log(auth)
+
 
 
 
@@ -76,7 +101,8 @@ console.log(auth)
         setsignupFormData,
         handleRegisterUser,
         handleLoginUser,
-        auth
+        auth,
+        resetCredentials
     }}
     >{children}</AuthContext.Provider>
 }
